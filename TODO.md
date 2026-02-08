@@ -19,8 +19,8 @@
   - [x] when sorting price low high sort by the lowest price available for each product variant and vice versa for high low
 - [ ] make the star a small icon assigned to 1 variant only rather than the whole product
 - [x] can we prepare the images to be displayed in different sizes instead of resizing them on the fly?
-- [ ] clicking on the preview needs to show that image in a modal centered over the current page
-  - [ ] the page needs to be blurred by a white translucent overlay and that happens gradually with a short animated transition
-  - [ ] the magnified image needs to fade-in slowly
-  - [ ] there needs to be a close button
-- [ ] add a logo
+- [x] clicking on the preview needs to show that image in a modal centered over the current page
+  - [x] the page needs to be blurred by a white translucent overlay and that happens gradually with a short animated transition
+  - [x] the magnified image needs to fade-in slowly
+  - [x] there needs to be a close button
+- [x] add a logo

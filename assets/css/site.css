@@ -222,7 +222,21 @@ body.modal-open {
   width: auto;
   height: auto;
   object-fit: contain;
+  display: block;
+}
+
+.image-modal-frame {
+  border: 8px solid #fff;
+  background: #fff;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+}
+
+.image-modal-caption {
+  margin: 0;
+  padding: 0.55rem 0.75rem 0.65rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--ink);
 }
 
 .image-modal-close {
