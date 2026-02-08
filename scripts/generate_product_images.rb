@@ -30,7 +30,15 @@ def image_dimensions(tool, path)
   [width, height]
 end
 
+def needs_update?(source_path, output_path)
+  return true unless File.exist?(output_path)
+
+  File.mtime(source_path) > File.mtime(output_path)
+end
+
 def build_max_side(tool, source, output_path, max_side_limit)
+  return true unless needs_update?(source, output_path)
+
   width, height = image_dimensions(tool, source)
   largest_side = [width, height].max
 
@@ -63,6 +71,8 @@ Dir.children(products_root).sort.each do |entry|
 
   target_sizes.each do |size|
     output = File.join(folder, "image-square-#{size}.jpg")
+    next unless needs_update?(source, output)
+
     ok = system(
       image_tool,
       source,
@@ -89,7 +99,6 @@ Dir.children(products_root).sort.each do |entry|
     exit 1
   end
 
-  Dir.glob(File.join(folder, "image-max-1000_*.jpg")).each { |path| FileUtils.rm_f(path) }
   additional_sources = Dir.children(folder).select do |filename|
     next false unless filename.match?(/\.(jpe?g|png|webp)\z/i)
     next false if filename == "image.jpg"
@@ -100,9 +109,17 @@ Dir.children(products_root).sort.each do |entry|
     true
   end.sort
 
+  expected_outputs = additional_sources.each_with_index.map do |_, index|
+    File.join(folder, "image-max-1000_#{index + 1}.jpg")
+  end
+
+  Dir.glob(File.join(folder, "image-max-1000_*.jpg")).each do |path|
+    FileUtils.rm_f(path) unless expected_outputs.include?(path)
+  end
+
   additional_sources.each_with_index do |filename, index|
     additional_source = File.join(folder, filename)
-    additional_output = File.join(folder, "image-max-1000_#{index + 1}.jpg")
+    additional_output = expected_outputs[index]
     ok = build_max_side(image_tool, additional_source, additional_output, max_side_limit)
     unless ok
       warn "Failed to build #{additional_output}"
