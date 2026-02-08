@@ -5,4 +5,5 @@ _site/
 .bundle/
 Gemfile.lock
 _products/**/image-square-*.jpg
+_products/**/image-max-1000.jpg
 .DS_Store

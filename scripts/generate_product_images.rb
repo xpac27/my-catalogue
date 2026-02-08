@@ -4,6 +4,8 @@ require "fileutils"
 
 products_root = File.join(__dir__, "..", "_products")
 target_sizes = [320, 580, 900]
+max_side_output = "image-max-1000.jpg"
+max_side_limit = 1000
 
 unless Dir.exist?(products_root)
   warn "Missing #{products_root}"
@@ -48,6 +50,30 @@ Dir.children(products_root).sort.each do |entry|
     )
     unless ok
       warn "Failed to build #{output}"
+      exit 1
+    end
+  end
+
+  dims = IO.popen([image_tool, source, "-format", "%w %h", "info:"], &:read).to_s.strip
+  width, height = dims.split.map(&:to_i)
+  largest_side = [width, height].max
+  max_side_path = File.join(folder, max_side_output)
+
+  if largest_side <= max_side_limit
+    FileUtils.cp(source, max_side_path)
+  else
+    ok = system(
+      image_tool,
+      source,
+      "-auto-orient",
+      "-resize", "#{max_side_limit}x#{max_side_limit}>",
+      "-strip",
+      "-interlace", "Plane",
+      "-quality", "88",
+      max_side_path
+    )
+    unless ok
+      warn "Failed to build #{max_side_path}"
       exit 1
     end
   end

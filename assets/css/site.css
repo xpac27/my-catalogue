@@ -27,6 +27,10 @@ body {
   min-height: 100vh;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 .container {
   width: 100%;
   margin: 0;
@@ -126,6 +130,7 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  cursor: zoom-in;
 }
 
 .card .content {
@@ -191,6 +196,50 @@ body {
   box-shadow: 0 6px 16px var(--shadow);
 }
 
+.image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(7px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.image-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.image-modal-content {
+  max-width: min(92vw, 1000px);
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+}
+
+.image-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #111;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 @media (max-width: 600px) {
   .site-header {
     padding-top: 0.25rem;
@@ -207,6 +256,10 @@ body {
 
 @media print {
   .controls {
+    display: none;
+  }
+
+  .image-modal {
     display: none;
   }
 }

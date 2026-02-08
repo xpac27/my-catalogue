@@ -71,6 +71,7 @@ title: Virginie Prints
           src="{{ '/_products/' | relative_url }}{{ product_dir }}/image-square-580.jpg"
           srcset="{{ '/_products/' | relative_url }}{{ product_dir }}/image-square-320.jpg 320w, {{ '/_products/' | relative_url }}{{ product_dir }}/image-square-580.jpg 580w, {{ '/_products/' | relative_url }}{{ product_dir }}/image-square-900.jpg 900w"
           sizes="(max-width: 600px) 100vw, (max-width: 1024px) 45vw, 340px"
+          data-full-src="{{ '/_products/' | relative_url }}{{ product_dir }}/image-max-1000.jpg"
           alt="{{ item.title | escape }}"
           loading="lazy"
           onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"800\" viewBox=\"0 0 800 800\"><rect width=\"800\" height=\"800\" fill=\"%23efe7d6\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Space Grotesk, Trebuchet MS, sans-serif\" font-size=\"32\" fill=\"%236b6252\">Image unavailable</text></svg>'"
@@ -98,13 +99,43 @@ title: Virginie Prints
   {% endfor %}
 </section>
 
+<div class="image-modal" id="image-modal" aria-hidden="true">
+  <button class="image-modal-close" type="button" aria-label="Close image">x</button>
+  <img class="image-modal-content" id="image-modal-content" alt="" />
+</div>
+
 <script>
   (function () {
     var select = document.getElementById("sort-select");
     var sizeFilter = document.getElementById("size-filter");
     var grid = document.querySelector(".listing-grid");
-    if (!select || !sizeFilter || !grid) {
+    var modal = document.getElementById("image-modal");
+    var modalImage = document.getElementById("image-modal-content");
+    var modalClose = document.querySelector(".image-modal-close");
+
+    if (!select || !sizeFilter || !grid || !modal || !modalImage || !modalClose) {
       return;
+    }
+
+    function openModal(src, alt) {
+      modalImage.src = src;
+      modalImage.alt = alt || "";
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+      requestAnimationFrame(function () {
+        modal.classList.add("is-open");
+      });
+    }
+
+    function closeModal() {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      window.setTimeout(function () {
+        if (!modal.classList.contains("is-open")) {
+          modalImage.removeAttribute("src");
+        }
+      }, 220);
     }
 
     function parsePrice(value) {
@@ -156,6 +187,21 @@ title: Virginie Prints
     });
 
     sizeFilter.addEventListener("change", applyFilter);
+    modal.addEventListener("click", closeModal);
+    modalClose.addEventListener("click", closeModal);
+
+    document.querySelectorAll(".listing-grid .card figure img").forEach(function (thumb) {
+      thumb.addEventListener("click", function () {
+        var fullSrc = thumb.dataset.fullSrc || thumb.currentSrc || thumb.src;
+        openModal(fullSrc, thumb.alt);
+      });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
 
     select.value = "name";
     sortCards("name");
