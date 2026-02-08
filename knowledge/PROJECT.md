@@ -1,15 +1,14 @@
 # Project context
 
-This repository is a simple Jekyll static site that lists art prints from a CSV file.
+This repository is a simple Jekyll static site that lists art prints from product folders.
 
 ## Data and assets
 
-- Product source data lives in `_data/listing.csv`.
-- A preprocess step generates `_data/listing_normalized.csv` with carry-forward values for empty cells (except `Star`) and an `Image` column.
-- Products are generated into `_products/<slug>/` with `index.md` and `image.jpg` for each row.
+- Product source data lives in `_products/<slug>/`.
+- Each product folder contains `index.md` (front matter metadata) and `image.jpg` (source image).
 - A derivative step generates `image-square-320.jpg`, `image-square-580.jpg`, and `image-square-900.jpg` per product.
-- Use `bundle exec rake refresh` to rebuild `_products` from the CSV sources.
-- New images are sourced from `assets/img/` using the `Image` index during refresh.
+- Generated thumbnails `image-square-*.jpg` are ignored in git and built in CI.
+- Use `bundle exec rake images` to regenerate thumbnails locally.
 - Each product `index.md` uses a `versions` list to capture techniques with per-size prices.
 
 ## Output

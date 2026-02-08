@@ -23,3 +23,4 @@
   - [ ] the page needs to be blurred by a white translucent overlay and that happens gradually with a short animated transition
   - [ ] the magnified image needs to fade-in slowly
   - [ ] there needs to be a close button
+- [ ] add a logo

@@ -1,7 +1,9 @@
 # Virginie Prints Listing
 
 Static Jekyll site that renders products from the `_products/` collection.
-Products are generated from `_data/listing_normalized.csv` (derived from `_data/listing.csv`) and include their image and metadata in each product folder.
+Each product folder is source data and contains:
+- `index.md` front matter with product metadata and versions.
+- `image.jpg` original source image.
 
 ## Quick start
 
@@ -12,19 +14,14 @@ bundle exec rake serve
 
 Then open `http://localhost:4000`.
 
-To regenerate products after editing the CSV:
+To generate responsive image derivatives:
 
 ```bash
-bundle exec rake refresh
+bundle exec rake images
 ```
 
-This runs:
-
-- `scripts/preprocess_listing.rb` to create `_data/listing_normalized.csv`.
-- `scripts/import_products.rb` to generate `_products/<slug>/index.md` and place images into each product folder.
-- `scripts/generate_product_images.rb` to generate square responsive derivatives (`320`, `580`, `900`) for each product image.
-
-When adding new products, place their images in `assets/img/` with the numeric index from the CSV before running `bundle exec rake refresh`.
+This creates `_products/<slug>/image-square-320.jpg`, `_products/<slug>/image-square-580.jpg`, and `_products/<slug>/image-square-900.jpg`.
+These generated thumbnails are ignored in git and are built in CI during deploy.
 
 Each product file uses a `versions` list in its front matter:
 

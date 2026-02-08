@@ -4,5 +4,5 @@ _site/
 .jekyll-metadata
 .bundle/
 Gemfile.lock
-_data/listing_normalized.csv
+_products/**/image-square-*.jpg
 .DS_Store
