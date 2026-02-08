@@ -254,6 +254,29 @@ body.modal-open {
   cursor: pointer;
 }
 
+.image-modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-modal-prev {
+  left: 1rem;
+}
+
+.image-modal-next {
+  right: 1rem;
+}
+
 @media (max-width: 600px) {
   .site-header {
     padding-top: 0.25rem;
@@ -265,6 +288,12 @@ body.modal-open {
 
   .card {
     grid-template-columns: 1fr;
+  }
+
+  .image-modal-arrow {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.4rem;
   }
 }
 

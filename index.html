@@ -59,12 +59,21 @@ title: Virginie Prints
         {% endif %}
       {% endfor %}
     {% endfor %}
+    {% assign modal_images = '/_products/' | append: product_dir | append: '/image-max-1000.jpg' | relative_url %}
+    {% assign modal_prefix = '/_products/' | append: product_dir | append: '/image-max-1000_' %}
+    {% for static_file in site.static_files %}
+      {% if static_file.path contains modal_prefix %}
+        {% assign extra_image_url = static_file.path | relative_url %}
+        {% assign modal_images = modal_images | append: '|' | append: extra_image_url %}
+      {% endif %}
+    {% endfor %}
     <article
       class="card{% if item.featured %} is-featured{% endif %}"
       data-name="{{ item.title | escape }}"
       data-price-low="{{ cheapest }}"
       data-price-high="{{ priciest }}"
       data-sizes="{{ sizes_list | escape }}"
+      data-modal-images="{{ modal_images | escape }}"
     >
       <figure>
         <img
@@ -102,6 +111,8 @@ title: Virginie Prints
 
 <div class="image-modal" id="image-modal" aria-hidden="true">
   <button class="image-modal-close" type="button" aria-label="Close image">x</button>
+  <button class="image-modal-arrow image-modal-prev" type="button" aria-label="Previous image">&#8249;</button>
+  <button class="image-modal-arrow image-modal-next" type="button" aria-label="Next image">&#8250;</button>
   <div class="image-modal-frame">
     <img class="image-modal-content" id="image-modal-content" alt="" />
     <p class="image-modal-caption" id="image-modal-caption"></p>
@@ -117,13 +128,32 @@ title: Virginie Prints
     var modalImage = document.getElementById("image-modal-content");
     var modalCaption = document.getElementById("image-modal-caption");
     var modalClose = document.querySelector(".image-modal-close");
+    var modalFrame = document.querySelector(".image-modal-frame");
+    var modalPrev = document.querySelector(".image-modal-prev");
+    var modalNext = document.querySelector(".image-modal-next");
+    var currentModalImages = [];
+    var currentImageIndex = 0;
 
-    if (!select || !sizeFilter || !grid || !modal || !modalImage || !modalCaption || !modalClose) {
+    if (
+      !select || !sizeFilter || !grid || !modal || !modalImage || !modalCaption || !modalClose ||
+      !modalFrame || !modalPrev || !modalNext
+    ) {
       return;
     }
 
-    function openModal(src, alt, caption) {
-      modalImage.src = src;
+    function updateModalImage() {
+      if (!currentModalImages.length) {
+        return;
+      }
+      modalImage.src = currentModalImages[currentImageIndex];
+      modalPrev.style.display = currentModalImages.length > 1 ? "" : "none";
+      modalNext.style.display = currentModalImages.length > 1 ? "" : "none";
+    }
+
+    function openModal(images, alt, caption) {
+      currentModalImages = images && images.length ? images : [];
+      currentImageIndex = 0;
+      updateModalImage();
       modalImage.alt = alt || "";
       modalCaption.textContent = caption || "";
       modal.setAttribute("aria-hidden", "false");
@@ -141,8 +171,29 @@ title: Virginie Prints
         if (!modal.classList.contains("is-open")) {
           modalImage.removeAttribute("src");
           modalCaption.textContent = "";
+          currentModalImages = [];
+          currentImageIndex = 0;
         }
       }, 220);
+    }
+
+    function showPreviousImage(event) {
+      event.stopPropagation();
+      if (currentModalImages.length < 2) {
+        return;
+      }
+      currentImageIndex =
+        (currentImageIndex - 1 + currentModalImages.length) % currentModalImages.length;
+      updateModalImage();
+    }
+
+    function showNextImage(event) {
+      event.stopPropagation();
+      if (currentModalImages.length < 2) {
+        return;
+      }
+      currentImageIndex = (currentImageIndex + 1) % currentModalImages.length;
+      updateModalImage();
     }
 
     function parsePrice(value) {
@@ -195,18 +246,37 @@ title: Virginie Prints
 
     sizeFilter.addEventListener("change", applyFilter);
     modal.addEventListener("click", closeModal);
-    modalClose.addEventListener("click", closeModal);
+    modalClose.addEventListener("click", function (event) {
+      event.stopPropagation();
+      closeModal();
+    });
+    modalFrame.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+    modalPrev.addEventListener("click", showPreviousImage);
+    modalNext.addEventListener("click", showNextImage);
 
     document.querySelectorAll(".listing-grid .card figure img").forEach(function (thumb) {
       thumb.addEventListener("click", function () {
-        var fullSrc = thumb.dataset.fullSrc || thumb.currentSrc || thumb.src;
-        openModal(fullSrc, thumb.alt, thumb.dataset.productName);
+        var card = thumb.closest(".card");
+        var images = [];
+        if (card && card.dataset.modalImages) {
+          images = card.dataset.modalImages.split("|").filter(Boolean);
+        }
+        if (!images.length) {
+          images = [thumb.dataset.fullSrc || thumb.currentSrc || thumb.src];
+        }
+        openModal(images, thumb.alt, thumb.dataset.productName);
       });
     });
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && modal.classList.contains("is-open")) {
         closeModal();
+      } else if (event.key === "ArrowLeft" && modal.classList.contains("is-open")) {
+        showPreviousImage(event);
+      } else if (event.key === "ArrowRight" && modal.classList.contains("is-open")) {
+        showNextImage(event);
       }
     });
 
