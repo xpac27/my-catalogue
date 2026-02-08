@@ -2,7 +2,8 @@
 
 require "fileutils"
 
-products_root = File.join(__dir__, "..", "_products")
+products_root = File.join(__dir__, "..", "catalogues", "virginie-prints-catalogue", "_products")
+public_root = File.join(__dir__, "..", "catalogues", "virginie-prints-catalogue", "products-assets")
 target_sizes = [320, 580, 900]
 max_side_output = "image-max-1000.jpg"
 max_side_limit = 1000
@@ -59,9 +60,16 @@ def build_max_side(tool, source, output_path, max_side_limit)
   )
 end
 
+FileUtils.mkdir_p(public_root)
+product_folders = []
+
 Dir.children(products_root).sort.each do |entry|
   folder = File.join(products_root, entry)
   next unless File.directory?(folder)
+  product_folders << entry
+
+  public_folder = File.join(public_root, entry)
+  FileUtils.mkdir_p(public_folder)
 
   source = File.join(folder, "image.jpg")
   unless File.exist?(source)
@@ -69,8 +77,11 @@ Dir.children(products_root).sort.each do |entry|
     next
   end
 
+  expected_outputs = []
+
   target_sizes.each do |size|
-    output = File.join(folder, "image-square-#{size}.jpg")
+    output = File.join(public_folder, "image-square-#{size}.jpg")
+    expected_outputs << output
     next unless needs_update?(source, output)
 
     ok = system(
@@ -91,7 +102,8 @@ Dir.children(products_root).sort.each do |entry|
     end
   end
 
-  max_side_path = File.join(folder, max_side_output)
+  max_side_path = File.join(public_folder, max_side_output)
+  expected_outputs << max_side_path
 
   ok = build_max_side(image_tool, source, max_side_path, max_side_limit)
   unless ok
@@ -109,21 +121,35 @@ Dir.children(products_root).sort.each do |entry|
     true
   end.sort
 
-  expected_outputs = additional_sources.each_with_index.map do |_, index|
-    File.join(folder, "image-max-1000_#{index + 1}.jpg")
+  expected_outputs += additional_sources.each_with_index.map do |_, index|
+    File.join(public_folder, "image-max-1000_#{index + 1}.jpg")
   end
 
-  Dir.glob(File.join(folder, "image-max-1000_*.jpg")).each do |path|
+  Dir.glob(File.join(public_folder, "image-max-1000_*.jpg")).each do |path|
     FileUtils.rm_f(path) unless expected_outputs.include?(path)
   end
 
   additional_sources.each_with_index do |filename, index|
     additional_source = File.join(folder, filename)
-    additional_output = expected_outputs[index]
+    additional_output = File.join(public_folder, "image-max-1000_#{index + 1}.jpg")
     ok = build_max_side(image_tool, additional_source, additional_output, max_side_limit)
     unless ok
       warn "Failed to build #{additional_output}"
       exit 1
     end
   end
+
+  Dir.children(public_folder).each do |filename|
+    full_path = File.join(public_folder, filename)
+    next unless File.file?(full_path)
+    next if expected_outputs.include?(full_path)
+
+    FileUtils.rm_f(full_path)
+  end
+end
+
+Dir.children(public_root).each do |entry|
+  next if product_folders.include?(entry)
+
+  FileUtils.rm_rf(File.join(public_root, entry))
 end

@@ -4,6 +4,7 @@ title: Virginie Prints
 ---
 
 {% assign products = site.products %}
+{% assign products_static_prefix = '/catalogues/virginie-prints-catalogue/products-assets/' %}
 
 <div class="controls">
   <label for="sort-select">Sort by</label>
@@ -36,7 +37,7 @@ title: Virginie Prints
 </div>
 <section class="listing-grid">
   {% for item in products %}
-    {% assign product_dir = item.relative_path | split: '/' | slice: 1, 1 | first %}
+    {% assign product_dir = item.relative_path | split: '/' | reverse | slice: 1, 1 | first %}
     {% assign sizes_list = "" %}
     {% for version in item.versions %}
       {% for entry in version.sizes %}
@@ -59,8 +60,8 @@ title: Virginie Prints
         {% endif %}
       {% endfor %}
     {% endfor %}
-    {% assign modal_images = '/_products/' | append: product_dir | append: '/image-max-1000.jpg' | relative_url %}
-    {% assign modal_prefix = '/_products/' | append: product_dir | append: '/image-max-1000_' %}
+    {% assign modal_images = products_static_prefix | append: product_dir | append: '/image-max-1000.jpg' | relative_url %}
+    {% assign modal_prefix = products_static_prefix | append: product_dir | append: '/image-max-1000_' %}
     {% for static_file in site.static_files %}
       {% if static_file.path contains modal_prefix %}
         {% assign extra_image_url = static_file.path | relative_url %}
@@ -77,10 +78,10 @@ title: Virginie Prints
     >
       <figure>
         <img
-          src="{{ '/_products/' | relative_url }}{{ product_dir }}/image-square-580.jpg"
-          srcset="{{ '/_products/' | relative_url }}{{ product_dir }}/image-square-320.jpg 320w, {{ '/_products/' | relative_url }}{{ product_dir }}/image-square-580.jpg 580w, {{ '/_products/' | relative_url }}{{ product_dir }}/image-square-900.jpg 900w"
+          src="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg"
+          srcset="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-320.jpg 320w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg 580w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-900.jpg 900w"
           sizes="(max-width: 600px) 100vw, (max-width: 1024px) 45vw, 340px"
-          data-full-src="{{ '/_products/' | relative_url }}{{ product_dir }}/image-max-1000.jpg"
+          data-full-src="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-max-1000.jpg"
           data-product-name="{{ item.title | escape }}"
           alt="{{ item.title | escape }}"
           loading="lazy"

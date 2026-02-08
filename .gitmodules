@@ -1,0 +1,3 @@
+[submodule "catalogues/virginie-prints-catalogue"]
+	path = catalogues/virginie-prints-catalogue
+	url = https://github.com/xpac27/virginie-prints-catalogue.git

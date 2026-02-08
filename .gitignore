@@ -4,7 +4,5 @@ _site/
 .jekyll-metadata
 .bundle/
 Gemfile.lock
-_products/**/image-square-*.jpg
-_products/**/image-max-1000.jpg
-_products/**/image-max-1000_*.jpg
+catalogues/virginie-prints-catalogue/products-assets/
 .DS_Store
