@@ -15,7 +15,8 @@
 }
 
 body {
-  margin: 10px;
+  padding: 10px;
+  margin: 0;
   color: var(--ink);
   font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
   background-color: var(--cream);
@@ -33,7 +34,23 @@ body {
 }
 
 .site-header {
-  padding: 0;
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+.brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.brand-logo {
+  width: 84px;
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.brand-copy {
+  min-width: 0;
 }
 
 .eyebrow {
@@ -176,7 +193,11 @@ body {
 
 @media (max-width: 600px) {
   .site-header {
-    padding-top: 0;
+    padding-top: 0.25rem;
+  }
+
+  .brand-logo {
+    width: 64px;
   }
 
   .card {

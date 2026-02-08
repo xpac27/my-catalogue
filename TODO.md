@@ -18,7 +18,7 @@
   - [x] add a filter to select sizes that should be displayed
   - [x] when sorting price low high sort by the lowest price available for each product variant and vice versa for high low
 - [ ] make the star a small icon assigned to 1 variant only rather than the whole product
-- [ ] can we prepare the images to be displayed in different sizes instead of resizing them on the fly?
+- [x] can we prepare the images to be displayed in different sizes instead of resizing them on the fly?
 - [ ] clicking on the preview needs to show that image in a modal centered over the current page
   - [ ] the page needs to be blurred by a white translucent overlay and that happens gradually with a short animated transition
   - [ ] the magnified image needs to fade-in slowly

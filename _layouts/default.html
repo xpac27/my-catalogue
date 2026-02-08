@@ -9,8 +9,19 @@
   <body>
     <header class="site-header">
       <div class="container">
-        <h1 class="site-title">{{ page.title | default: site.title }}</h1>
-        <p class="eyebrow"><b>Prints Catalogue.</b> Original works and limited series. All sizes and techniques listed.</p>
+        <div class="brand">
+          <img
+            class="brand-logo"
+            src="{{ '/assets/logo/cat-logo-transparent.png' | relative_url }}"
+            alt="Virginie Prints cat logo"
+            width="84"
+            height="72"
+          />
+          <div class="brand-copy">
+            <h1 class="site-title">{{ page.title | default: site.title }}</h1>
+            <p class="eyebrow"><b>Prints Catalogue.</b> Original works and limited series. All sizes and techniques listed.</p>
+          </div>
+        </div>
       </div>
     </header>
 
