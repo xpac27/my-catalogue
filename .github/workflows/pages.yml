@@ -28,6 +28,19 @@ jobs:
           ruby-version: "3.2"
           bundler-cache: true
 
+      - name: Detect ImageMagick tool
+        run: |
+          if command -v magick >/dev/null 2>&1; then
+            echo "Using ImageMagick entrypoint: magick"
+            magick -version | head -n 1
+          elif command -v convert >/dev/null 2>&1; then
+            echo "Using ImageMagick entrypoint: convert"
+            convert -version | head -n 1
+          else
+            echo "No ImageMagick binary found (expected 'magick' or 'convert')."
+            exit 1
+          fi
+
       - name: Build site
         run: bundle exec rake build
 

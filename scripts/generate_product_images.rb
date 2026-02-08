@@ -10,8 +10,15 @@ unless Dir.exist?(products_root)
   exit 1
 end
 
-unless system("magick", "-version", out: File::NULL, err: File::NULL)
-  warn "ImageMagick 'magick' command is required"
+image_tool = nil
+if system("magick", "-version", out: File::NULL, err: File::NULL)
+  image_tool = "magick"
+elsif system("convert", "-version", out: File::NULL, err: File::NULL)
+  image_tool = "convert"
+end
+
+unless image_tool
+  warn "ImageMagick is required ('magick' or 'convert')"
   exit 1
 end
 
@@ -28,7 +35,7 @@ Dir.children(products_root).sort.each do |entry|
   target_sizes.each do |size|
     output = File.join(folder, "image-square-#{size}.jpg")
     ok = system(
-      "magick",
+      image_tool,
       source,
       "-auto-orient",
       "-resize", "#{size}x#{size}^",
