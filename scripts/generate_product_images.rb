@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "etc"
 require "fileutils"
 
 products_root = File.join(__dir__, "..", "catalogues", "virginie-prints-catalogue", "_products")
@@ -23,6 +24,20 @@ end
 unless image_tool
   warn "ImageMagick is required ('magick' or 'convert')"
   exit 1
+end
+
+def default_image_jobs
+  cores = Etc.nprocessors
+  [[cores - 1, 1].max, 8].min
+rescue StandardError
+  2
+end
+
+def resolve_job_count(product_count)
+  env_value = ENV["IMAGE_JOBS"].to_s.strip
+  jobs = env_value.empty? ? default_image_jobs : env_value.to_i
+  jobs = 1 if jobs < 1
+  [jobs, [product_count, 1].max].min
 end
 
 def image_dimensions(tool, path)
@@ -60,21 +75,14 @@ def build_max_side(tool, source, output_path, max_side_limit)
   )
 end
 
-FileUtils.mkdir_p(public_root)
-product_folders = []
-
-Dir.children(products_root).sort.each do |entry|
+def process_product(entry:, products_root:, public_root:, target_sizes:, max_side_output:, max_side_limit:, image_tool:)
   folder = File.join(products_root, entry)
-  next unless File.directory?(folder)
-  product_folders << entry
-
   public_folder = File.join(public_root, entry)
   FileUtils.mkdir_p(public_folder)
 
   source = File.join(folder, "image.jpg")
   unless File.exist?(source)
-    warn "Skipping #{entry}: missing image.jpg"
-    next
+    return [true, "Skipping #{entry}: missing image.jpg"]
   end
 
   expected_outputs = []
@@ -97,8 +105,7 @@ Dir.children(products_root).sort.each do |entry|
       output
     )
     unless ok
-      warn "Failed to build #{output}"
-      exit 1
+      return [false, "Failed to build #{output}"]
     end
   end
 
@@ -107,8 +114,7 @@ Dir.children(products_root).sort.each do |entry|
 
   ok = build_max_side(image_tool, source, max_side_path, max_side_limit)
   unless ok
-    warn "Failed to build #{max_side_path}"
-    exit 1
+    return [false, "Failed to build #{max_side_path}"]
   end
 
   additional_sources = Dir.children(folder).select do |filename|
@@ -134,8 +140,7 @@ Dir.children(products_root).sort.each do |entry|
     additional_output = File.join(public_folder, "image-max-1000_#{index + 1}.jpg")
     ok = build_max_side(image_tool, additional_source, additional_output, max_side_limit)
     unless ok
-      warn "Failed to build #{additional_output}"
-      exit 1
+      return [false, "Failed to build #{additional_output}"]
     end
   end
 
@@ -146,6 +151,61 @@ Dir.children(products_root).sort.each do |entry|
 
     FileUtils.rm_f(full_path)
   end
+  [true, nil]
+end
+
+FileUtils.mkdir_p(public_root)
+
+product_folders = Dir.children(products_root).sort.select do |entry|
+  File.directory?(File.join(products_root, entry))
+end
+
+job_count = resolve_job_count(product_folders.length)
+puts "Generating product images with #{job_count} job(s)"
+
+queue = Queue.new
+product_folders.each { |entry| queue << entry }
+errors = []
+messages = []
+mutex = Mutex.new
+
+workers = Array.new(job_count) do
+  Thread.new do
+    loop do
+      entry = begin
+        queue.pop(true)
+      rescue ThreadError
+        nil
+      end
+      break unless entry
+
+      ok, message = process_product(
+        entry: entry,
+        products_root: products_root,
+        public_root: public_root,
+        target_sizes: target_sizes,
+        max_side_output: max_side_output,
+        max_side_limit: max_side_limit,
+        image_tool: image_tool
+      )
+      mutex.synchronize do
+        if ok
+          messages << message if message
+        else
+          errors << message
+        end
+      end
+    end
+  end
+end
+
+workers.each(&:join)
+
+messages.sort.each { |message| warn message }
+
+unless errors.empty?
+  errors.each { |message| warn message }
+  exit 1
 end
 
 Dir.children(public_root).each do |entry|
