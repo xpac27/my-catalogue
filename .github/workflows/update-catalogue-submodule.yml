@@ -1,0 +1,41 @@
+name: Update Catalogue Submodule
+
+on:
+  repository_dispatch:
+    types:
+      - catalogue-updated
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-submodule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update catalogue submodule to latest master
+        run: |
+          set -euo pipefail
+          git submodule sync --recursive
+          git -C catalogues/virginie-prints-catalogue fetch origin master
+          git -C catalogues/virginie-prints-catalogue checkout origin/master
+          git add catalogues/virginie-prints-catalogue
+
+          if git diff --cached --quiet; then
+            echo "No submodule update to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: update catalogue submodule pointer"
+          git push origin HEAD:master
