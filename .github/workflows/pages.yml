@@ -4,6 +4,21 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "catalogues/virginie-prints-catalogue"
+      - "catalogues/virginie-prints-catalogue/**"
+      - "_config.yml"
+      - "index.html"
+      - "_layouts/**"
+      - "_includes/**"
+      - "_sass/**"
+      - "assets/**"
+      - "scripts/**"
+      - "Rakefile"
+      - "Gemfile"
+      - "Gemfile.lock"
+      - ".gitmodules"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
