@@ -45,11 +45,6 @@ jobs:
           ruby-version: "3.2"
           bundler-cache: true
 
-      - name: Install ImageMagick
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-
       - name: Detect ImageMagick tool
         run: |
           if command -v magick >/dev/null 2>&1; then
@@ -59,8 +54,20 @@ jobs:
             echo "Using ImageMagick entrypoint: convert"
             convert -version | head -n 1
           else
-            echo "No ImageMagick binary found (expected 'magick' or 'convert')."
-            exit 1
+            echo "ImageMagick missing, installing..."
+            sudo apt-get update
+            sudo apt-get install -y imagemagick
+
+            if command -v magick >/dev/null 2>&1; then
+              echo "Using ImageMagick entrypoint: magick"
+              magick -version | head -n 1
+            elif command -v convert >/dev/null 2>&1; then
+              echo "Using ImageMagick entrypoint: convert"
+              convert -version | head -n 1
+            else
+              echo "No ImageMagick binary found after install (expected 'magick' or 'convert')."
+              exit 1
+            fi
           fi
 
       - name: Build site
