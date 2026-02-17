@@ -17,10 +17,18 @@
   - [x] sort by the cheaper price if multiple prices exist and remove the `sort_price` field
   - [x] add a filter to select sizes that should be displayed
   - [x] when sorting price low high sort by the lowest price available for each product variant and vice versa for high low
-- [ ] make the star a small icon assigned to 1 variant only rather than the whole product
 - [x] can we prepare the images to be displayed in different sizes instead of resizing them on the fly?
 - [x] clicking on the preview needs to show that image in a modal centered over the current page
   - [x] the page needs to be blurred by a white translucent overlay and that happens gradually with a short animated transition
   - [x] the magnified image needs to fade-in slowly
   - [x] there needs to be a close button
 - [x] add a logo
+- [ ] the subrepo contains images that are too large (more than 1MB), reduce their size (max 1000px width/height and 72dpi) and remove the large versions from the repo and its history
+- [ ] open larger images in a new page instead of a modal
+  - [ ] the new page start with a banner that repeats the product's information
+- [ ] each variant can be chosen by clicking on it and is added to a list of selected variants next to the top controls in a new panel
+  - [ ] selected variants can be removed from the list by clicking on them in the list
+  - [ ] a button in the new panel allows sending the list of selected variants by email
+    - [ ] the email is prefilled and is configured in a new top level md file in the submodule
+  - [ ] a button in the new panel allows copying the list of selected variants to the clipboard
+  - [ ] a button in the new panel allows printing the list of selected variants, the printout should contain the email address to send the list to
