@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap');
 
 :root {
   --ink: #1f1f1a;
@@ -18,7 +18,7 @@ body {
   padding: 10px;
   margin: 0;
   color: var(--ink);
-  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-family: "Inconsolata", "Courier New", monospace;
   background-color: var(--cream);
   background-image:
     radial-gradient(circle at 10% 10%, rgba(198, 150, 99, 0.18), transparent 42%),
@@ -66,7 +66,7 @@ body.modal-open {
 }
 
 .site-title {
-  font-family: "Fraunces", "Georgia", serif;
+  font-family: "Inconsolata", "Courier New", monospace;
   font-size: clamp(2rem, 4vw, 3.4rem);
   margin: 0 0 0.5rem;
 }
@@ -139,7 +139,7 @@ body.modal-open {
 }
 
 .card h2 {
-  font-family: "Fraunces", "Georgia", serif;
+  font-family: "Inconsolata", "Courier New", monospace;
   font-size: 1.1rem;
   margin: 0;
 }
