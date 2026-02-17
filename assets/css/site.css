@@ -3,7 +3,7 @@
 :root {
   --ink: #1f1f1a;
   --muted: #5a5a50;
-  --cream: #f7f4ee;
+  --cream: #f3f0e9;
   --sand: #efe7d6;
   --clay: #c2694c;
   --leaf: #3f6b4f;
@@ -20,10 +20,6 @@ body {
   color: var(--ink);
   font-family: "Inconsolata", "Courier New", monospace;
   background-color: var(--cream);
-  background-image:
-    radial-gradient(circle at 10% 10%, rgba(198, 150, 99, 0.18), transparent 42%),
-    radial-gradient(circle at 90% 20%, rgba(63, 107, 79, 0.12), transparent 40%),
-    linear-gradient(120deg, #fbf7f0, #f1e8d7 65%, #f7efe3);
   min-height: 100vh;
 }
 
@@ -86,7 +82,6 @@ body.modal-open {
   padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.65);
   margin: 0 0 0.75rem;
-  border-radius: 10px;
 }
 
 .controls label {
@@ -104,8 +99,7 @@ body.modal-open {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.72);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.90);
   box-shadow: none;
   overflow: hidden;
   display: grid;
@@ -182,17 +176,14 @@ body.modal-open {
 
 .star-icon {
   position: absolute;
-  bottom: 0.5rem;
+  top: 0.5rem;
   right: 0.5rem;
   width: 2.2rem;
   height: 2.2rem;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
   color: var(--clay);
   font-size: 1.2rem;
-  box-shadow: 0 6px 16px var(--shadow);
 }
 
 .image-modal {
