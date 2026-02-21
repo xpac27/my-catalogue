@@ -1,0 +1,51 @@
+---
+layout: default
+---
+
+{% assign products_static_prefix = '/catalogues/virginie-prints-catalogue/products-assets/' %}
+{% assign product_dir = page.relative_path | split: '/' | reverse | slice: 1, 1 | first %}
+{% assign gallery_images = products_static_prefix | append: product_dir | append: '/image-max-1000.jpg' | relative_url %}
+{% assign gallery_prefix = products_static_prefix | append: product_dir | append: '/image-max-1000_' %}
+{% for static_file in site.static_files %}
+  {% if static_file.path contains gallery_prefix %}
+    {% assign extra_image_url = static_file.path | relative_url %}
+    {% assign gallery_images = gallery_images | append: '|' | append: extra_image_url %}
+  {% endif %}
+{% endfor %}
+
+<a class="back-button" href="{{ '/' | relative_url }}" aria-label="Back to catalogue">&#8592; Back to catalogue</a>
+
+<section class="product-banner">
+  <h2 class="product-banner-title">{{ page.title }}</h2>
+  {% if page.featured %}
+    <p class="product-banner-featured">★ Featured product</p>
+  {% endif %}
+  <ul class="versions product-banner-versions">
+    {% for version in page.versions %}
+      <li>
+        <span class="version-name">{{ version.technique }}</span>
+        <ul>
+          {% for entry in version.sizes %}
+            <li>{{ entry.size }} - {{ entry.price }} SEK</li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="product-gallery" aria-label="{{ page.title }} image gallery">
+  {% assign gallery_items = gallery_images | split: '|' %}
+  {% for image_url in gallery_items %}
+    {% if image_url != "" %}
+      <figure class="product-gallery-item">
+        <img
+          src="{{ image_url }}"
+          alt="{{ page.title | escape }}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"800\" viewBox=\"0 0 800 800\"><rect width=\"800\" height=\"800\" fill=\"%23efe7d6\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Inconsolata, Courier New, monospace\" font-size=\"32\" fill=\"%236b6252\">Image unavailable</text></svg>'"
+        />
+      </figure>
+    {% endif %}
+  {% endfor %}
+</section>

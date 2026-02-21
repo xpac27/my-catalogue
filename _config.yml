@@ -4,6 +4,13 @@ url: "https://xpac27.github.io"
 collections_dir: "catalogues/virginie-prints-catalogue"
 collections:
   products:
-    output: false
+    output: true
+    permalink: /products/:path/
+defaults:
+  - scope:
+      path: ""
+      type: products
+    values:
+      layout: product
 include:
   - catalogues/virginie-prints-catalogue/_products

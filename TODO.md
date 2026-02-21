@@ -24,8 +24,8 @@
   - [x] there needs to be a close button
 - [x] add a logo
 - [x] the subrepo contains images that are too large (more than 1MB), reduce their size (max 1000px width/height and 72dpi) and remove the large versions from the repo and its history
-- [ ] open larger images in a new page instead of a modal
-  - [ ] the new page start with a banner that repeats the product's information
+- [x] open larger images in a new page instead of a modal
+  - [x] the new page start with a banner that repeats the product's information
 - [ ] each variant can be chosen by clicking on it and is added to a list of selected variants next to the top controls in a new panel
   - [ ] selected variants can be removed from the list by clicking on them in the list
   - [ ] a button in the new panel allows sending the list of selected variants by email

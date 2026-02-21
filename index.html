@@ -60,33 +60,24 @@ title: Virginie Prints
         {% endif %}
       {% endfor %}
     {% endfor %}
-    {% assign modal_images = products_static_prefix | append: product_dir | append: '/image-max-1000.jpg' | relative_url %}
-    {% assign modal_prefix = products_static_prefix | append: product_dir | append: '/image-max-1000_' %}
-    {% for static_file in site.static_files %}
-      {% if static_file.path contains modal_prefix %}
-        {% assign extra_image_url = static_file.path | relative_url %}
-        {% assign modal_images = modal_images | append: '|' | append: extra_image_url %}
-      {% endif %}
-    {% endfor %}
     <article
       class="card{% if item.featured %} is-featured{% endif %}"
       data-name="{{ item.title | escape }}"
       data-price-low="{{ cheapest }}"
       data-price-high="{{ priciest }}"
       data-sizes="{{ sizes_list | escape }}"
-      data-modal-images="{{ modal_images | escape }}"
     >
       <figure>
-        <img
-          src="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg"
-          srcset="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-320.jpg 320w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg 580w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-900.jpg 900w"
-          sizes="(max-width: 600px) 100vw, (max-width: 1024px) 45vw, 340px"
-          data-full-src="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-max-1000.jpg"
-          data-product-name="{{ item.title | escape }}"
-          alt="{{ item.title | escape }}"
-          loading="lazy"
-          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"800\" viewBox=\"0 0 800 800\"><rect width=\"800\" height=\"800\" fill=\"%23efe7d6\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Inconsolata, Courier New, monospace\" font-size=\"32\" fill=\"%236b6252\">Image unavailable</text></svg>'"
-        />
+        <a href="{{ item.url | relative_url }}" aria-label="Open {{ item.title | escape }} details">
+          <img
+            src="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg"
+            srcset="{{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-320.jpg 320w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-580.jpg 580w, {{ products_static_prefix | relative_url }}{{ product_dir }}/image-square-900.jpg 900w"
+            sizes="(max-width: 600px) 100vw, (max-width: 1024px) 45vw, 340px"
+            alt="{{ item.title | escape }}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"800\" viewBox=\"0 0 800 800\"><rect width=\"800\" height=\"800\" fill=\"%23efe7d6\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Inconsolata, Courier New, monospace\" font-size=\"32\" fill=\"%236b6252\">Image unavailable</text></svg>'"
+          />
+        </a>
       </figure>
       {% if item.featured %}
         <span class="star-icon" aria-label="Featured">★</span>
@@ -110,93 +101,14 @@ title: Virginie Prints
   {% endfor %}
 </section>
 
-<div class="image-modal" id="image-modal" aria-hidden="true">
-  <button class="image-modal-close" type="button" aria-label="Close image">x</button>
-  <div class="image-modal-frame">
-    <div class="image-modal-media">
-      <img class="image-modal-content" id="image-modal-content" alt="" />
-      <button class="image-modal-arrow image-modal-prev" type="button" aria-label="Previous image">&#8249;</button>
-      <button class="image-modal-arrow image-modal-next" type="button" aria-label="Next image">&#8250;</button>
-    </div>
-    <p class="image-modal-caption" id="image-modal-caption"></p>
-  </div>
-</div>
-
 <script>
   (function () {
     var select = document.getElementById("sort-select");
     var sizeFilter = document.getElementById("size-filter");
     var grid = document.querySelector(".listing-grid");
-    var modal = document.getElementById("image-modal");
-    var modalImage = document.getElementById("image-modal-content");
-    var modalCaption = document.getElementById("image-modal-caption");
-    var modalClose = document.querySelector(".image-modal-close");
-    var modalFrame = document.querySelector(".image-modal-frame");
-    var modalPrev = document.querySelector(".image-modal-prev");
-    var modalNext = document.querySelector(".image-modal-next");
-    var currentModalImages = [];
-    var currentImageIndex = 0;
 
-    if (
-      !select || !sizeFilter || !grid || !modal || !modalImage || !modalCaption || !modalClose ||
-      !modalFrame || !modalPrev || !modalNext
-    ) {
+    if (!select || !sizeFilter || !grid) {
       return;
-    }
-
-    function updateModalImage() {
-      if (!currentModalImages.length) {
-        return;
-      }
-      modalImage.src = currentModalImages[currentImageIndex];
-      modalPrev.style.display = currentModalImages.length > 1 ? "" : "none";
-      modalNext.style.display = currentModalImages.length > 1 ? "" : "none";
-    }
-
-    function openModal(images, alt, caption) {
-      currentModalImages = images && images.length ? images : [];
-      currentImageIndex = 0;
-      updateModalImage();
-      modalImage.alt = alt || "";
-      modalCaption.textContent = caption || "";
-      modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("modal-open");
-      requestAnimationFrame(function () {
-        modal.classList.add("is-open");
-      });
-    }
-
-    function closeModal() {
-      modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("modal-open");
-      window.setTimeout(function () {
-        if (!modal.classList.contains("is-open")) {
-          modalImage.removeAttribute("src");
-          modalCaption.textContent = "";
-          currentModalImages = [];
-          currentImageIndex = 0;
-        }
-      }, 220);
-    }
-
-    function showPreviousImage(event) {
-      event.stopPropagation();
-      if (currentModalImages.length < 2) {
-        return;
-      }
-      currentImageIndex =
-        (currentImageIndex - 1 + currentModalImages.length) % currentModalImages.length;
-      updateModalImage();
-    }
-
-    function showNextImage(event) {
-      event.stopPropagation();
-      if (currentModalImages.length < 2) {
-        return;
-      }
-      currentImageIndex = (currentImageIndex + 1) % currentModalImages.length;
-      updateModalImage();
     }
 
     function parsePrice(value) {
@@ -248,40 +160,6 @@ title: Virginie Prints
     });
 
     sizeFilter.addEventListener("change", applyFilter);
-    modal.addEventListener("click", closeModal);
-    modalClose.addEventListener("click", function (event) {
-      event.stopPropagation();
-      closeModal();
-    });
-    modalFrame.addEventListener("click", function (event) {
-      event.stopPropagation();
-    });
-    modalPrev.addEventListener("click", showPreviousImage);
-    modalNext.addEventListener("click", showNextImage);
-
-    document.querySelectorAll(".listing-grid .card figure img").forEach(function (thumb) {
-      thumb.addEventListener("click", function () {
-        var card = thumb.closest(".card");
-        var images = [];
-        if (card && card.dataset.modalImages) {
-          images = card.dataset.modalImages.split("|").filter(Boolean);
-        }
-        if (!images.length) {
-          images = [thumb.dataset.fullSrc || thumb.currentSrc || thumb.src];
-        }
-        openModal(images, thumb.alt, thumb.dataset.productName);
-      });
-    });
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && modal.classList.contains("is-open")) {
-        closeModal();
-      } else if (event.key === "ArrowLeft" && modal.classList.contains("is-open")) {
-        showPreviousImage(event);
-      } else if (event.key === "ArrowRight" && modal.classList.contains("is-open")) {
-        showNextImage(event);
-      }
-    });
 
     select.value = "name";
     sortCards("name");
