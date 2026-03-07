@@ -1,6 +1,6 @@
 title: Virginie Prints
-baseurl: "/my-catalogue"
-url: "https://xpac27.github.io"
+baseurl: ""
+url: "https://www.virginieprints.com"
 collections_dir: "catalogues/virginie-prints-catalogue"
 collections:
   products:
